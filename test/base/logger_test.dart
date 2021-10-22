@@ -15,9 +15,8 @@ import '../src/common.dart';
 import '../src/context.dart';
 import '../src/mocks.dart';
 
-final Generator _kNoAnsiPlatform = () =>
-    FakePlatform.fromPlatform(const LocalPlatform())
-      ..stdoutSupportsAnsi = false;
+final Generator _kNoAnsiPlatform =
+    () => MutablePlatform()..stdoutSupportsAnsi = false;
 
 void main() {
   final String red = RegExp.escape(AnsiTerminal.red);
@@ -68,7 +67,7 @@ void main() {
               r'\n$'));
     }, overrides: <Type, Generator>{
       OutputPreferences: () => OutputPreferences(showColor: true),
-      Platform: () => FakePlatform()..stdoutSupportsAnsi = true,
+      Platform: () => MutablePlatform()..stdoutSupportsAnsi = true,
     });
   });
 
@@ -143,7 +142,7 @@ void main() {
         });
         expect(done, isTrue);
       }, overrides: <Type, Generator>{
-        Platform: () => FakePlatform(operatingSystem: testOs),
+        Platform: () => MutablePlatform()..operatingSystem = testOs,
         Stdio: () => mockStdio,
       });
 
@@ -171,7 +170,7 @@ void main() {
         });
         expect(done, isTrue);
       }, overrides: <Type, Generator>{
-        Platform: () => FakePlatform(operatingSystem: testOs),
+        Platform: () => MutablePlatform()..operatingSystem = testOs,
         Stdio: () => mockStdio,
         Stopwatch: () => mockStopwatch,
       });
@@ -208,8 +207,9 @@ void main() {
       }, overrides: <Type, Generator>{
         Logger: () => StdoutLogger(),
         OutputPreferences: () => OutputPreferences(showColor: true),
-        Platform: () =>
-            FakePlatform(operatingSystem: testOs)..stdoutSupportsAnsi = true,
+        Platform: () => MutablePlatform()
+          ..operatingSystem = testOs
+          ..stdoutSupportsAnsi = true,
         Stdio: () => mockStdio,
       });
 
@@ -251,8 +251,9 @@ void main() {
       }, overrides: <Type, Generator>{
         Logger: () => StdoutLogger(),
         OutputPreferences: () => OutputPreferences(showColor: true),
-        Platform: () =>
-            FakePlatform(operatingSystem: testOs)..stdoutSupportsAnsi = true,
+        Platform: () => MutablePlatform()
+          ..operatingSystem = testOs
+          ..stdoutSupportsAnsi = true,
         Stdio: () => mockStdio,
       });
 
@@ -290,7 +291,7 @@ void main() {
         });
         expect(done, isTrue);
       }, overrides: <Type, Generator>{
-        Platform: () => FakePlatform(operatingSystem: testOs),
+        Platform: () => MutablePlatform()..operatingSystem = testOs,
         Stdio: () => mockStdio,
         Stopwatch: () => mockStopwatch,
       });
@@ -335,7 +336,7 @@ void main() {
         });
         expect(done, isTrue);
       }, overrides: <Type, Generator>{
-        Platform: () => FakePlatform(operatingSystem: testOs),
+        Platform: () => MutablePlatform()..operatingSystem = testOs,
         Stdio: () => mockStdio,
         Stopwatch: () => mockStopwatch,
       });
@@ -386,7 +387,7 @@ void main() {
         });
         expect(done, isTrue);
       }, overrides: <Type, Generator>{
-        Platform: () => FakePlatform(operatingSystem: testOs),
+        Platform: () => MutablePlatform()..operatingSystem = testOs,
         Stdio: () => mockStdio,
         Stopwatch: () => mockStopwatch,
       });
@@ -596,7 +597,7 @@ void main() {
     }, overrides: <Type, Generator>{
       Logger: () => StdoutLogger(),
       OutputPreferences: () => OutputPreferences(showColor: true),
-      Platform: () => FakePlatform()..stdoutSupportsAnsi = true,
+      Platform: () => MutablePlatform()..stdoutSupportsAnsi = true,
       Stdio: () => mockStdio,
     });
 

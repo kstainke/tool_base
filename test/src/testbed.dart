@@ -32,10 +32,13 @@ import 'context_runner.dart';
 // this provider. For example, [BufferLogger], [MemoryFileSystem].
 final Map<Type, Generator> _testbedDefaults = <Type, Generator>{
   // Keeps tests fast by avoiding the actual file system.
-  FileSystem: () => MemoryFileSystem(style: platform.isWindows ? FileSystemStyle.windows : FileSystemStyle.posix),
+  FileSystem: () => MemoryFileSystem(
+      style:
+          platform.isWindows ? FileSystemStyle.windows : FileSystemStyle.posix),
   Logger: () => BufferLogger(), // Allows reading logs and prevents stdout.
   OperatingSystemUtils: () => FakeOperatingSystemUtils(),
-  OutputPreferences: () => OutputPreferences(showColor: false), // configures BufferLogger to avoid color codes.
+  OutputPreferences: () => OutputPreferences(
+      showColor: false), // configures BufferLogger to avoid color codes.
 //  Usage: () => NoOpUsage(), // prevent addition of analytics from burdening test mocks
 //  FlutterVersion: () => FakeFlutterVersion() // prevent requirement to mock git for test runner.
 };
@@ -85,7 +88,8 @@ class Testbed {
   ///
   /// `overrides` may be used to provide new context values for the single test
   /// case or override any context values from the setup.
-  FutureOr<T> run<T>(FutureOr<T> Function() test, {Map<Type, Generator> overrides}) {
+  FutureOr<T> run<T>(FutureOr<T> Function() test,
+      {Map<Type, Generator> overrides}) {
     final Map<Type, Generator> testOverrides = <Type, Generator>{
       ..._testbedDefaults,
       // Add the initial setUp overrides
@@ -101,16 +105,20 @@ class Testbed {
     return HttpOverrides.runZoned(() {
       return runInContext<T>(() {
         return context.run<T>(
-          name: 'testbed',
-          overrides: testOverrides,
-          zoneSpecification: ZoneSpecification(
-            createTimer: (Zone self, ZoneDelegate parent, Zone zone, Duration duration, void Function() timer) {
+            name: 'testbed',
+            overrides: testOverrides,
+            zoneSpecification: ZoneSpecification(createTimer: (Zone self,
+                ZoneDelegate parent,
+                Zone zone,
+                Duration duration,
+                void Function() timer) {
               final Timer result = parent.createTimer(zone, duration, timer);
               timers[result] = StackTrace.current;
               return result;
-            },
-            createPeriodicTimer: (Zone self, ZoneDelegate parent, Zone zone, Duration period, void Function(Timer) timer) {
-              final Timer result = parent.createPeriodicTimer(zone, period, timer);
+            }, createPeriodicTimer: (Zone self, ZoneDelegate parent, Zone zone,
+                Duration period, void Function(Timer) timer) {
+              final Timer result =
+                  parent.createPeriodicTimer(zone, period, timer);
               timers[result] = StackTrace.current;
               return result;
             }),
@@ -246,7 +254,8 @@ class FakeHttpClient implements HttpClient {
   }
 
   @override
-  Future<HttpClientRequest> open(String method, String host, int port, String path) async {
+  Future<HttpClientRequest> open(
+      String method, String host, int port, String path) async {
     return FakeHttpClientRequest();
   }
 
@@ -308,6 +317,9 @@ class FakeHttpClientRequest implements HttpClientRequest {
   bool persistentConnection;
 
   @override
+  void abort([Object exception, StackTrace stackTrace]) {}
+
+  @override
   void add(List<int> data) {}
 
   @override
@@ -358,7 +370,8 @@ class FakeHttpClientRequest implements HttpClientRequest {
 }
 
 class FakeHttpClientResponse implements HttpClientResponse {
-  final Stream<Uint8List> _delegate = Stream<Uint8List>.fromIterable(const Iterable<Uint8List>.empty());
+  final Stream<Uint8List> _delegate =
+      Stream<Uint8List>.fromIterable(const Iterable<Uint8List>.empty());
 
   @override
   final HttpHeaders headers = FakeHttpHeaders();
@@ -389,8 +402,10 @@ class FakeHttpClientResponse implements HttpClientResponse {
   bool get isRedirect => false;
 
   @override
-  StreamSubscription<Uint8List> listen(void Function(Uint8List event) onData, { Function onError, void Function() onDone, bool cancelOnError }) {
-    return const Stream<Uint8List>.empty().listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<Uint8List> listen(void Function(Uint8List event) onData,
+      {Function onError, void Function() onDone, bool cancelOnError}) {
+    return const Stream<Uint8List>.empty().listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override
@@ -400,8 +415,10 @@ class FakeHttpClientResponse implements HttpClientResponse {
   String get reasonPhrase => null;
 
   @override
-  Future<HttpClientResponse> redirect([ String method, Uri url, bool followLoops ]) {
-    return Future<HttpClientResponse>.error(UnsupportedError('Mocked response'));
+  Future<HttpClientResponse> redirect(
+      [String method, Uri url, bool followLoops]) {
+    return Future<HttpClientResponse>.error(
+        UnsupportedError('Mocked response'));
   }
 
   @override
@@ -444,7 +461,8 @@ class FakeHttpClientResponse implements HttpClientResponse {
   }
 
   @override
-  Stream<Uint8List> distinct([bool Function(Uint8List previous, Uint8List next) equals]) {
+  Stream<Uint8List> distinct(
+      [bool Function(Uint8List previous, Uint8List next) equals]) {
     return _delegate.distinct(equals);
   }
 
@@ -480,7 +498,8 @@ class FakeHttpClientResponse implements HttpClientResponse {
   }
 
   @override
-  Future<S> fold<S>(S initialValue, S Function(S previous, Uint8List element) combine) {
+  Future<S> fold<S>(
+      S initialValue, S Function(S previous, Uint8List element) combine) {
     return _delegate.fold<S>(initialValue, combine);
   }
 
@@ -533,7 +552,8 @@ class FakeHttpClientResponse implements HttpClientResponse {
   }
 
   @override
-  Future<Uint8List> reduce(List<int> Function(Uint8List previous, Uint8List element) combine) {
+  Future<Uint8List> reduce(
+      List<int> Function(Uint8List previous, Uint8List element) combine) {
     return _delegate.reduce(combine);
   }
 
@@ -541,7 +561,8 @@ class FakeHttpClientResponse implements HttpClientResponse {
   Future<Uint8List> get single => _delegate.single;
 
   @override
-  Future<Uint8List> singleWhere(bool Function(Uint8List element) test, {List<int> Function() orElse}) {
+  Future<Uint8List> singleWhere(bool Function(Uint8List element) test,
+      {List<int> Function() orElse}) {
     return _delegate.singleWhere(test, orElse: orElse);
   }
 
@@ -600,25 +621,25 @@ class FakeHttpHeaders extends HttpHeaders {
   List<String> operator [](String name) => <String>[];
 
   @override
-  void add(String name, Object value) { }
+  void add(String name, Object value, {bool preserveHeaderCase: false}) {}
 
   @override
-  void clear() { }
+  void clear() {}
 
   @override
-  void forEach(void Function(String name, List<String> values) f) { }
+  void forEach(void Function(String name, List<String> values) f) {}
 
   @override
-  void noFolding(String name) { }
+  void noFolding(String name) {}
 
   @override
-  void remove(String name, Object value) { }
+  void remove(String name, Object value) {}
 
   @override
-  void removeAll(String name) { }
+  void removeAll(String name) {}
 
   @override
-  void set(String name, Object value) { }
+  void set(String name, Object value, {bool preserveHeaderCase: false}) {}
 
   @override
   String value(String name) => null;

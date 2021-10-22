@@ -11,7 +11,7 @@ import 'dart:io' as io show IOSink, ProcessSignal, Stdout, StdoutException;
 //import 'package:tool_base/src/application_package.dart';
 //import 'package:tool_base/src/base/file_system.dart' hide IOSink;
 import 'package:tool_base/src/base/io.dart';
-//import 'package:tool_base/src/base/platform.dart';
+import 'package:tool_base/src/base/platform.dart';
 //import 'package:tool_base/src/build_info.dart';
 //import 'package:tool_base/src/compile.dart';
 //import 'package:tool_base/src/devfs.dart';
@@ -148,7 +148,7 @@ class MockProcessManager extends Mock implements ProcessManager {
   List<String> commands;
 
   @override
-  bool canRun(dynamic command, { String workingDirectory }) => canRunSucceeds;
+  bool canRun(dynamic command, {String workingDirectory}) => canRunSucceeds;
 
   @override
   Future<Process> start(
@@ -161,7 +161,8 @@ class MockProcessManager extends Mock implements ProcessManager {
   }) {
     if (!runSucceeds) {
       final String executable = command[0];
-      final List<String> arguments = command.length > 1 ? command.sublist(1) : <String>[];
+      final List<String> arguments =
+          command.length > 1 ? command.sublist(1) : <String>[];
       throw ProcessException(executable, arguments);
     }
 
@@ -178,8 +179,8 @@ class MockProcess extends Mock implements Process {
     Stream<List<int>> stdin,
     this.stdout = const Stream<List<int>>.empty(),
     this.stderr = const Stream<List<int>>.empty(),
-  }) : exitCode = exitCode ?? Future<int>.value(0),
-       stdin = stdin ?? MemoryIOSink();
+  })  : exitCode = exitCode ?? Future<int>.value(0),
+        stdin = stdin ?? MemoryIOSink();
 
   @override
   final int pid;
@@ -205,8 +206,8 @@ class FakeProcess implements Process {
     Stream<List<int>> stdin,
     this.stdout = const Stream<List<int>>.empty(),
     this.stderr = const Stream<List<int>>.empty(),
-  }) : exitCode = exitCode ?? Future<int>.value(0),
-       stdin = stdin ?? MemoryIOSink();
+  })  : exitCode = exitCode ?? Future<int>.value(0),
+        stdin = stdin ?? MemoryIOSink();
 
   @override
   final int pid;
@@ -244,7 +245,8 @@ class PromptingProcess implements Process {
     await _stdoutController.close();
   }
 
-  final StreamController<List<int>> _stdoutController = StreamController<List<int>>();
+  final StreamController<List<int>> _stdoutController =
+      StreamController<List<int>>();
   final CompleterIOSink _stdin = CompleterIOSink();
 
   @override
@@ -274,8 +276,7 @@ class CompleterIOSink extends MemoryIOSink {
 
   @override
   void add(List<int> data) {
-    if (!_completer.isCompleted)
-      _completer.complete(data);
+    if (!_completer.isCompleted) _completer.complete(data);
     super.add(data);
   }
 }
@@ -312,12 +313,12 @@ class MemoryIOSink implements IOSink {
   }
 
   @override
-  void writeln([ Object obj = '' ]) {
+  void writeln([Object obj = '']) {
     add(encoding.encode('$obj\n'));
   }
 
   @override
-  void writeAll(Iterable<dynamic> objects, [ String separator = '' ]) {
+  void writeAll(Iterable<dynamic> objects, [String separator = '']) {
     bool addSeparator = false;
     for (dynamic object in objects) {
       if (addSeparator) {
@@ -329,7 +330,7 @@ class MemoryIOSink implements IOSink {
   }
 
   @override
-  void addError(dynamic error, [ StackTrace stackTrace ]) {
+  void addError(dynamic error, [StackTrace stackTrace]) {
     throw UnimplementedError();
   }
 
@@ -337,10 +338,10 @@ class MemoryIOSink implements IOSink {
   Future<void> get done => close();
 
   @override
-  Future<void> close() async { }
+  Future<void> close() async {}
 
   @override
-  Future<void> flush() async { }
+  Future<void> flush() async {}
 }
 
 class MemoryStdout extends MemoryIOSink implements io.Stdout {
@@ -350,6 +351,7 @@ class MemoryStdout extends MemoryIOSink implements io.Stdout {
     assert(value != null);
     _hasTerminal = value;
   }
+
   bool _hasTerminal = true;
 
   @override
@@ -361,23 +363,24 @@ class MemoryStdout extends MemoryIOSink implements io.Stdout {
     assert(value != null);
     _supportsAnsiEscapes = value;
   }
+
   bool _supportsAnsiEscapes = true;
 
   @override
   int get terminalColumns {
-    if (_terminalColumns != null)
-      return _terminalColumns;
+    if (_terminalColumns != null) return _terminalColumns;
     throw const io.StdoutException('unspecified mock value');
   }
+
   set terminalColumns(int value) => _terminalColumns = value;
   int _terminalColumns;
 
   @override
   int get terminalLines {
-    if (_terminalLines != null)
-      return _terminalLines;
+    if (_terminalLines != null) return _terminalLines;
     throw const io.StdoutException('unspecified mock value');
   }
+
   set terminalLines(int value) => _terminalLines = value;
   int _terminalLines;
 }
@@ -405,6 +408,60 @@ class MockStdio extends Stdio {
       _stdout.writes.map<String>(_stdout.encoding.decode).toList();
   List<String> get writtenToStderr =>
       _stderr.writes.map<String>(_stderr.encoding.decode).toList();
+}
+
+class MutablePlatform extends Platform {
+  static const Platform _kLocalPlatform = LocalPlatform();
+
+  MutablePlatform();
+
+  @override
+  Map<String, String> environment = _kLocalPlatform.environment;
+
+  @override
+  String executable = _kLocalPlatform.executable;
+
+  @override
+  List<String> executableArguments = _kLocalPlatform.executableArguments;
+
+  @override
+  String localHostname = _kLocalPlatform.localHostname;
+
+  @override
+  String localeName = _kLocalPlatform.localeName;
+
+  @override
+  int numberOfProcessors = _kLocalPlatform.numberOfProcessors;
+
+  @override
+  String operatingSystem = _kLocalPlatform.operatingSystem;
+
+  @override
+  String operatingSystemVersion = _kLocalPlatform.operatingSystemVersion;
+
+  @override
+  String packageConfig = _kLocalPlatform.packageConfig;
+
+  @override
+  String packageRoot = _kLocalPlatform.packageRoot;
+
+  @override
+  String pathSeparator = _kLocalPlatform.pathSeparator;
+
+  @override
+  String resolvedExecutable = _kLocalPlatform.resolvedExecutable;
+
+  @override
+  Uri script = _kLocalPlatform.script;
+
+  @override
+  bool stdinSupportsAnsi = _kLocalPlatform.stdinSupportsAnsi;
+
+  @override
+  bool stdoutSupportsAnsi = _kLocalPlatform.stdoutSupportsAnsi;
+
+  @override
+  String version = _kLocalPlatform.version;
 }
 
 //class MockPollingDeviceDiscovery extends PollingDeviceDiscovery {
