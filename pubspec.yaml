@@ -13,7 +13,7 @@ dependencies:
   file: ^6.1.2
   intl: ^0.17.0
   platform: ^3.0.2
-  process: ^4.2.4
+  process: ^4.2.3
   pub_cache: ^0.3.1
 
 dev_dependencies:
